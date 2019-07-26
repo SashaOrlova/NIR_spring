@@ -5,6 +5,7 @@ import Local.Configuration.ConfigParser;
 import Local.Configuration.MainConfig;
 
 import java.util.Queue;
+import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -24,8 +25,9 @@ public class Interpreter {
         }
 
         ClientCommunicator communicator = new ClientCommunicator();
+        Scanner in = new Scanner(System.in);
         while (true) {
-            String command = System.console().readLine().toLowerCase().trim();
+            String command = in.nextLine().toLowerCase().trim();
             log.info("Parse  command " + command);
 
             switch (command) {

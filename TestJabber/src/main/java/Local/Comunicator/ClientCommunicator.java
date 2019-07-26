@@ -8,7 +8,6 @@ import Local.UI.Interpreter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -25,7 +24,12 @@ public class ClientCommunicator {
     public void startCommunication(MainConfig config) throws IOException {
         this.config = config;
         for (InstanceConfig instance: config.getInstances()) {
-            Client client = new Client(instance.getHost(), instance.getPort());
+            Client client = null;
+            try {
+                client = new Client(instance.getHost(), instance.getPort());
+            } catch (IOException e) {
+                Interpreter.reportAboutError("client connect fail " + e.getMessage());
+            }
             clients.add(client);
             client.start();
         }
