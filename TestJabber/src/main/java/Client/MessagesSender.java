@@ -61,7 +61,7 @@ public class MessagesSender extends Thread {
      */
     private void sendToLocal(Message message) throws IOException {
         long timestamp = System.currentTimeMillis();
-        long duration = Long.parseLong(message.getBody(), 10) - timestamp;
+        long duration = timestamp - Long.parseLong(message.getBody(), 10);
         out.writeInt(Results.SUCCESS);
         out.writeLong(duration);
         log.info("Send timestamp from user" + id + ' ' + timestamp);
@@ -84,7 +84,7 @@ public class MessagesSender extends Thread {
         try {
             login(connection);
             ArrayList<Chat> chats = new ArrayList<>();
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 1; j++) {
                 int number = rand.nextInt(config.getClientsNumber()) + 1;
                 Chat chat = connection.getChatManager().createChat("testuser" + number + "@localhost", new MessageListener() {
                     public void processMessage(Chat chat, Message message) {

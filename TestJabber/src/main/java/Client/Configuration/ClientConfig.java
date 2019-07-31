@@ -33,6 +33,11 @@ public class ClientConfig implements Serializable {
      */
     private int messageNumber;
 
+    /**
+     * how many time wait before close connection
+     */
+    private int maxSleepTime;
+
     public ClientConfig(String host,
                         String serviceName,
                         int sendingDelay,
@@ -40,7 +45,9 @@ public class ClientConfig implements Serializable {
                         int userStartIndex,
                         int userFinishIndex,
                         int clientsNumber,
-                        int messageNumber) {
+                        int messageNumber,
+                        int maxSleepTime
+    ) {
         this.host = host;
         this.serviceName = serviceName;
         this.sendingDelay = sendingDelay;
@@ -49,6 +56,7 @@ public class ClientConfig implements Serializable {
         this.userFinishIndex = userFinishIndex;
         this.clientsNumber = clientsNumber;
         this.messageNumber = messageNumber;
+        this.maxSleepTime = maxSleepTime;
     }
 
     public String getHost() {
@@ -81,5 +89,9 @@ public class ClientConfig implements Serializable {
 
     public int getMessageNumber() {
         return messageNumber;
+    }
+
+    public int getMaxSleepTime() {
+        return maxSleepTime;
     }
 }

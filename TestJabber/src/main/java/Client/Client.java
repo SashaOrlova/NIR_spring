@@ -16,8 +16,8 @@ public class Client {
 
     public static void main(String[] args) {
         try {
+            ServerSocket server = new ServerSocket(Integer.parseInt(args[0]), 1);
             while (true) {
-                ServerSocket server = new ServerSocket(Integer.parseInt(args[0]), 1);
                 Socket clientSocket = server.accept();
                 log.info("Connect new client");
                 new Client(clientSocket);
@@ -29,10 +29,15 @@ public class Client {
 
     Client(Socket clientSocket) throws IOException {
         InputStream inputStream = clientSocket.getInputStream();
+        ClientConfig config = null;
+
         while (!clientSocket.isClosed()) {
+
             int command = inputStream.read();
+            if (command == -1) {
+                continue;
+            }
             log.info("Get command: " + command);
-            ClientConfig config = null;
             switch (command) {
                 case Commands.START_CLIENT:
                     log.info("Start client");
@@ -43,6 +48,10 @@ public class Client {
                     ObjectInputStream ois = new ObjectInputStream(inputStream);
                     try {
                         config = (ClientConfig) ois.readObject();
+                        if (config == null) {
+                            log.info("No config found");
+                            clientSocket.close();
+                        }
                     } catch (ClassNotFoundException e) {
                         log.info("Wrong config type");
                         clientSocket.close();
