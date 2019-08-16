@@ -34,10 +34,11 @@ public class MessagesSender extends Thread {
 
     /**
      * Create connection this server
+     *
      * @return XMPPConnection
      */
     private XMPPConnection getConnection() {
-        ConnectionConfiguration config = new ConnectionConfiguration(this.config.getHost()  , 5222, this.config.getServiceName());
+        ConnectionConfiguration config = new ConnectionConfiguration(this.config.getHost(), 5222, this.config.getServiceName());
         SASLAuthentication.supportSASLMechanism("PLAIN", 0);
         log.info("Connect to server");
         return new XMPPConnection(config);
@@ -46,6 +47,7 @@ public class MessagesSender extends Thread {
     /**
      * Login user on xmpp server
      * NOTICE: expensive operation for server
+     *
      * @param connection
      * @throws XMPPException
      */
@@ -57,6 +59,7 @@ public class MessagesSender extends Thread {
 
     /**
      * send result to local machine
+     *
      * @param message
      * @throws IOException
      */
@@ -71,6 +74,7 @@ public class MessagesSender extends Thread {
     /**
      * send message to server
      * message contain current timestamp
+     *
      * @param chat
      * @throws XMPPException
      */
@@ -115,12 +119,12 @@ public class MessagesSender extends Thread {
             try {
                 sleep(100000);
             } catch (InterruptedException e) {
-               log.log(Level.SEVERE, "Interruptes while sleeping", e);
+                log.log(Level.SEVERE, "Interruptes while sleeping", e);
             }
 
-            for (Chat chat: chats) {
-                Collection<MessageListener> listeners =  chat.getListeners();
-                for (MessageListener listener: listeners) {
+            for (Chat chat : chats) {
+                Collection<MessageListener> listeners = chat.getListeners();
+                for (MessageListener listener : listeners) {
                     chat.removeMessageListener(listener);
                 }
             }

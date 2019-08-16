@@ -29,6 +29,7 @@ public class Client {
     /**
      * activate client
      * make it ready for tests
+     *
      * @throws IOException
      */
     public void start() throws IOException {
@@ -38,6 +39,7 @@ public class Client {
 
     /**
      * Send config to client instance
+     *
      * @param config
      * @throws IOException
      */
@@ -50,6 +52,7 @@ public class Client {
     /**
      * Send client command about tests start
      * Append result of tests in global queue
+     *
      * @param successAnswers
      * @param failsAnswers
      * @throws IOException

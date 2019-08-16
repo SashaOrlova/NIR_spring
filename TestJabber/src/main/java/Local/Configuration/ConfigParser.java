@@ -28,7 +28,7 @@ public class ConfigParser {
         System.out.println("print number of instance:");
         int instanceCount = in.nextInt();
         InstanceConfig[] instanceConfigs = new InstanceConfig[instanceCount];
-        for (int i = 0 ; i < instanceCount; i++) {
+        for (int i = 0; i < instanceCount; i++) {
             instanceConfigs[i] = readInstanseConfig(in);
         }
         System.out.println("print xmpp server service name:");
@@ -72,7 +72,7 @@ public class ConfigParser {
      */
     public static boolean validateConfig(MainConfig config) {
         boolean allIPCorrect = true;
-        for (InstanceConfig instance: config.getInstances()) {
+        for (InstanceConfig instance : config.getInstances()) {
             allIPCorrect &= ConfigParser.validateIPaddress(instance.getHost());
         }
 
@@ -88,6 +88,7 @@ public class ConfigParser {
 
     /**
      * check is ip valid
+     *
      * @param ipAddress
      * @return
      */

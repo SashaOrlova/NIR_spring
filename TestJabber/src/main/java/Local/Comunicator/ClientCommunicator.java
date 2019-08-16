@@ -23,7 +23,7 @@ public class ClientCommunicator {
      */
     public void startCommunication(MainConfig config) throws IOException {
         this.config = config;
-        for (InstanceConfig instance: config.getInstances()) {
+        for (InstanceConfig instance : config.getInstances()) {
             Client client = null;
             try {
                 client = new Client(instance.getHost(), instance.getPort());
@@ -41,7 +41,7 @@ public class ClientCommunicator {
     public void sendConfig() throws IOException {
         int clientsCounter = 0;
         int stepSize = config.getUsersCount() / config.getInstanceCount();
-        for (Client client: clients) {
+        for (Client client : clients) {
             ClientConfig config = new ClientConfig(this.config.getServiceIP(),
                     this.config.getServiceName(),
                     this.config.getSendingDelay(),
@@ -63,7 +63,7 @@ public class ClientCommunicator {
     public void startTesting(final Queue<Long> globalQueue) {
         final AtomicInteger atomicInt = new AtomicInteger(0);
 
-        for (final Client client: clients) {
+        for (final Client client : clients) {
             Thread myThready = new Thread(new Runnable() {
                 public void run() {
                     try {

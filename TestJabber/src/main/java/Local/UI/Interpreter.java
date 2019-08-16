@@ -72,6 +72,7 @@ public class Interpreter {
 
     /**
      * write about error and finish program
+     *
      * @param error
      */
     public static void reportAboutError(String error) {

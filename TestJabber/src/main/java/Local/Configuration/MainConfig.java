@@ -47,7 +47,7 @@ public class MainConfig {
                       int sendingDelay,
                       int updateTime,
                       int maxWaitTime
-                      ) {
+    ) {
         this.instanceCount = instanceCount;
         this.sendingMessagesCount = sendingMessagesCount;
         this.usersCount = usersCount;
@@ -66,6 +66,7 @@ public class MainConfig {
     public int getSendingDelay() {
         return sendingDelay;
     }
+
     public int getMaxWaitTime() {
         return maxWaitTime;
     }

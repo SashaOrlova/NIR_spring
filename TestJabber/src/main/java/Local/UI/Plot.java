@@ -46,6 +46,7 @@ public class Plot extends Thread {
 
     /**
      * update existed plot
+     *
      * @param queue
      * @param chart
      */
@@ -70,6 +71,7 @@ public class Plot extends Thread {
 
     /**
      * draw constant plot from data
+     *
      * @param queue
      */
     public static void drawConstantPlot(Queue<Long> queue) {
@@ -97,6 +99,7 @@ public class Plot extends Thread {
     /**
      * get data from global queue
      * only data for drawing
+     *
      * @param queue
      * @return
      */
@@ -105,16 +108,16 @@ public class Plot extends Thread {
         int[] data = convertToInt(rowData);
 
         Arrays.sort(data);
-        int startIndex = data.length > 1 ? Math.min(data.length - 1, (int)(data.length*percentile)) : 0;
+        int startIndex = data.length > 1 ? Math.min(data.length - 1, (int) (data.length * percentile)) : 0;
 
         int[] percentilesData = Arrays.copyOfRange(data, startIndex, data.length);
         int coeff = (int) (1 - percentile) * 10000;
         for (int i = 0; i < percentilesData.length; i++) {
-            percentilesData[i] = (int)Math.ceil((double)percentilesData[i]/coeff)*coeff;
+            percentilesData[i] = (int) Math.ceil((double) percentilesData[i] / coeff) * coeff;
         }
 
         HashMap<Integer, Integer> counter = new HashMap<>();
-        for (int number: percentilesData) {
+        for (int number : percentilesData) {
             if (counter.containsKey(number)) {
                 int newCounter = counter.get(number) + 1;
                 counter.put(number, newCounter);
@@ -134,18 +137,19 @@ public class Plot extends Thread {
             arrayIndex++;
         }
 
-        return new Integer[][] {value, count};
+        return new Integer[][]{value, count};
     }
 
     /**
      * convert object[] to double[]
+     *
      * @param data
      * @return
      */
     private static int[] convertToInt(Object[] data) {
         int[] convertedData = new int[data.length];
         for (int i = 0; i < data.length; i++) {
-            convertedData[i] = ((Long)data[i]).intValue();
+            convertedData[i] = ((Long) data[i]).intValue();
         }
 
         return convertedData;
