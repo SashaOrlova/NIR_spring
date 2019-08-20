@@ -3,11 +3,15 @@ package Client;
 import Client.Configuration.ClientConfig;
 import Common.Commands;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,14 +26,15 @@ public class Client {
                 log.info("Connect new client");
                 new Client(clientSocket);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.log(Level.SEVERE, "Socket error", e);
         }
     }
 
-    Client(Socket clientSocket) throws IOException {
+    Client(Socket clientSocket) throws IOException, InterruptedException {
         InputStream inputStream = clientSocket.getInputStream();
         ClientConfig config = null;
+        Queue<Integer> answers = new ConcurrentLinkedQueue<>();
 
         while (!clientSocket.isClosed()) {
 
@@ -65,11 +70,85 @@ public class Client {
                         clientSocket.close();
                         return;
                     }
+
+                    ArrayList<Thread> threads = new ArrayList<>();
                     for (int i = config.getUserStartIndex(); i < config.getUserFinishIndex(); i++) {
                         log.info("start user " + i);
-                        Thread sender = new MessagesSender(i, clientSocket, config);
+                        Thread sender = new MessagesSender(i, answers, config);
+                        threads.add(sender);
                         sender.start();
                     }
+
+                    DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+
+                    ClientConfig finalConfig = config;
+                    Thread uploadThread = new Thread(() -> {
+                        while (true) {
+                            Object[] array = answers.toArray();
+                            answers.clear();
+                            for (Object answer: array) {
+                                try {
+                                    out.writeInt((Integer) answer);
+                                } catch (IOException e) {
+                                    log.severe("Client socket error");
+                                }
+                            }
+                            try {
+                                Thread.sleep(finalConfig.getUpdateTime());
+                            } catch (InterruptedException e) {
+                                return;
+                            }
+                        }
+                    });
+                    uploadThread.run();
+
+                    for (Thread thread: threads) {
+                        try {
+                            thread.join();
+                        } catch (InterruptedException e) {
+                            log.severe("interrupt during wait threads");
+                            clientSocket.close();
+                            return;
+                        }
+                    }
+                    uploadThread.interrupt();
+                    uploadThread.join();
+                    log.info("Finish test");
+                    clientSocket.close();
+                    break;
+
+                case Commands.START_LOGIN:
+                    log.info("Start login tests");
+                    if (config == null) {
+                        log.severe("No config");
+                        clientSocket.close();
+                        return;
+                    }
+                    ArrayList<Thread> loginThreads = new ArrayList<>();
+                    for (int i = config.getUserStartIndex(); i < config.getUserFinishIndex(); i++) {
+                        log.info("start user " + i);
+                        Thread sender = new LoginChecker(i, answers, config);
+                        loginThreads.add(sender);
+                        sender.start();
+                    }
+                    for (Thread thread: loginThreads) {
+                        try {
+                            thread.join();
+                        } catch (InterruptedException e) {
+                            log.severe("interrupt during wait threads");
+                            clientSocket.close();
+                            return;
+                        }
+                    }
+                    log.info("Finish test");
+                    out = new DataOutputStream(clientSocket.getOutputStream());
+
+                    for (Integer answer: answers) {
+                        out.writeInt(answer);
+                    }
+                    out.writeInt(Commands.FINISH);
+                    out.close();
+                    clientSocket.close();
                     break;
 
                 default:

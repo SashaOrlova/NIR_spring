@@ -4,14 +4,17 @@ import Local.Comunicator.ClientCommunicator;
 import Local.Configuration.ConfigParser;
 import Local.Configuration.MainConfig;
 import Local.UI.Interpreter;
+import Local.UI.LinePlot;
 import Local.UI.Mode;
-import Local.UI.Plot;
+import Local.UI.QuantilesPlot;
 
 import java.io.*;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Controller {
     private int mode = Mode.ONLINE;
@@ -21,6 +24,7 @@ public class Controller {
 
     /**
      * connect to clients
+     *
      * @throws IOException
      */
     public void start() throws IOException {
@@ -36,6 +40,7 @@ public class Controller {
 
     /**
      * loaf config into clients instance
+     *
      * @throws IOException
      */
     public void loadConfig() throws IOException {
@@ -63,12 +68,33 @@ public class Controller {
             Interpreter.reportAboutError("wrong config");
         }
         if (mode == Mode.ONLINE) {
-            Thread ui = new Plot(config, globalQueue);
+            Thread ui = new QuantilesPlot(config, globalQueue);
             ui.start();
         } else {
             waitUntilEnd(globalQueue, config);
             saveInFile(globalQueue);
         }
+    }
+
+    public void startLoginTest() throws IOException, InterruptedException {
+        ArrayList<Integer> success = new ArrayList<>();
+        ArrayList<Integer> fails = new ArrayList<>();
+        ArrayList<Integer> usersCount = new ArrayList<>();
+
+        for (int i = 0; i < config.getIterationsNumber(); i++) {
+            AtomicInteger successLogin = new AtomicInteger(0);
+            AtomicInteger failLogin = new AtomicInteger(0);
+
+            communicator.startCommunication(config);
+            communicator.sendLoginConfig(i);
+            communicator.startLoginTesting(successLogin, failLogin);
+
+            success.add(successLogin.intValue());
+            fails.add(failLogin.intValue());
+            usersCount.add(config.getIterationClients(i));
+        }
+
+        new LinePlot(fails, success, usersCount);
     }
 
     /**
@@ -82,6 +108,7 @@ public class Controller {
      * change mode of work
      * online - get updates online
      * offline - get result after tests end
+     *
      * @param mode
      */
     public void switchMode(int mode) {
@@ -90,17 +117,19 @@ public class Controller {
 
     /**
      * draw plot from file
+     *
      * @throws FileNotFoundException
      */
     public void plotFromFile() throws FileNotFoundException {
         Queue<Long> queue = getDataFromFile();
 
-        Plot.drawConstantPlot(queue);
+//        QuantilesPlot.drawConstantPlot(queue);
     }
 
 
     /**
      * check is config null and validate it
+     *
      * @param config
      * @return
      */
@@ -114,6 +143,7 @@ public class Controller {
 
     /**
      * wait end of clients work
+     *
      * @param queue
      * @param config
      */
@@ -134,12 +164,13 @@ public class Controller {
 
     /**
      * save result from client into file
+     *
      * @param queue
      * @throws IOException
      */
     private static void saveInFile(Queue<Long> queue) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_NAME));
-        for (Long time: queue) {
+        for (Long time : queue) {
             writer.write(time.toString() + '\n');
         }
 
@@ -148,6 +179,7 @@ public class Controller {
 
     /**
      * Read data from file saved by offline mode
+     *
      * @return
      * @throws FileNotFoundException
      */
