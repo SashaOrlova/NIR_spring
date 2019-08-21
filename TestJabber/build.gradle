@@ -23,7 +23,7 @@ dependencies {
     compile 'xpp3:xpp3_min:1.1.4c'
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'org.knowm.xchart:xchart:3.5.4'
-    compile 'rocks.xmpp:xmpp-core-client:0.8.1'
+//    compile 'rocks.xmpp:xmpp-core-client:0.8.1'
 }
 
 group = 'TestJabber'
