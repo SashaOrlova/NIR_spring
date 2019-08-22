@@ -81,12 +81,10 @@ public class ClientCommunicator {
      * launch tests in all clients
      */
     public void startTesting(final Queue<Long> globalQueue) {
-        final AtomicInteger atomicInt = new AtomicInteger(0);
-
         for (final Client client : clients) {
             Thread clientsThread = new Thread(() -> {
                 try {
-                    client.startTest(globalQueue, atomicInt);
+                    client.startTest(globalQueue);
                 } catch (IOException e) {
                     Interpreter.reportAboutError("client connection error");
                 }
@@ -98,24 +96,16 @@ public class ClientCommunicator {
     /**
      * launch login tests in all clients
      */
-    public void startLoginTesting(final AtomicInteger successAnswers, final AtomicInteger failsAnswers) throws InterruptedException {
-        ArrayList<Thread> threads = new ArrayList<>();
-
+    public void startLoginTesting(final Queue<Long> globalQueue) throws InterruptedException {
         for (final Client client : clients) {
-            Thread clientsThread = new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        client.startLoginTest(successAnswers, failsAnswers);
-                    } catch (IOException e) {
-                        Interpreter.reportAboutError("client connection error");
-                    }
+            Thread clientsThread = new Thread(() -> {
+                try {
+                    client.startLoginTest(globalQueue);
+                } catch (IOException e) {
+                    Interpreter.reportAboutError("client connection error");
                 }
             });
             clientsThread.start();
-            threads.add(clientsThread);
-        }
-        for (Thread thread: threads) {
-            thread.join();
         }
     }
 }

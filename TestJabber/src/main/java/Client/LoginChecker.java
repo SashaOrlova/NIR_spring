@@ -57,13 +57,17 @@ public class LoginChecker extends Thread {
     @Override
     public void run() {
         XMPPConnection connection = getConnection();
-        try {
-            login(connection);
-            log.info("Success login, send to local instance");
-            queue.add(Results.SUCCESS);
-        } catch (XMPPException e) {
-            queue.add(Results.FAIL);
-            log.log(Level.SEVERE, "Error while messaging", e);
+        for (int i = 0; i < config.getMessageNumber(); i++) {
+            try {
+                long startTimestamp = System.currentTimeMillis();
+                login(connection);
+                long finishTimestamp = System.currentTimeMillis();
+                log.info("Success login, send to local instance");
+                queue.add((int) (finishTimestamp - startTimestamp));
+                if (config.getSendingDelay() != 0) {
+                    Thread.sleep(config.getSendingDelay());
+                }
+            } catch (Exception ignored) {}
         }
     }
 }

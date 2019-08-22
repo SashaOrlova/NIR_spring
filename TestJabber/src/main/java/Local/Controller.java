@@ -4,7 +4,6 @@ import Local.Comunicator.ClientCommunicator;
 import Local.Configuration.ConfigParser;
 import Local.Configuration.MainConfig;
 import Local.UI.Interpreter;
-import Local.UI.LinePlot;
 import Local.UI.Mode;
 import Local.UI.QuantilesPlot;
 
@@ -77,24 +76,18 @@ public class Controller {
     }
 
     public void startLoginTest() throws IOException, InterruptedException {
-        ArrayList<Integer> success = new ArrayList<>();
-        ArrayList<Integer> fails = new ArrayList<>();
-        ArrayList<Integer> usersCount = new ArrayList<>();
-
-        for (int i = 0; i < config.getIterationsNumber(); i++) {
-            AtomicInteger successLogin = new AtomicInteger(0);
-            AtomicInteger failLogin = new AtomicInteger(0);
-
-            communicator.startCommunication(config);
-            communicator.sendLoginConfig(i);
-            communicator.startLoginTesting(successLogin, failLogin);
-
-            success.add(successLogin.intValue());
-            fails.add(failLogin.intValue());
-            usersCount.add(config.getIterationClients(i));
+        Queue<Long> globalQueue = new ConcurrentLinkedQueue<>();
+        communicator.startTesting(globalQueue);
+        if (!checkConfig(config)) {
+            Interpreter.reportAboutError("wrong config");
         }
-
-        new LinePlot(fails, success, usersCount);
+        if (mode == Mode.ONLINE) {
+            Thread ui = new QuantilesPlot(config, globalQueue);
+            ui.start();
+        } else {
+            waitUntilEnd(globalQueue, config);
+            saveInFile(globalQueue);
+        }
     }
 
     /**
