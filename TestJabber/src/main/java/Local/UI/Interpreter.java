@@ -17,6 +17,7 @@ public class Interpreter {
     private static final String MODE_OFFLINE = "mode offline";
     private static final String PLOT_FROM_FILE = "plot from file";
     private static final String START_LOGIN_TEST = "start login test";
+    private static final String START_REGISTER_TEST = "start register test";
 
     public static void main(String[] args) throws Exception {
         Controller controller = new Controller();
@@ -62,6 +63,10 @@ public class Interpreter {
 
                     case START_LOGIN_TEST:
                         controller.startLoginTest();
+                        break;
+
+                    case START_REGISTER_TEST:
+                        controller.startRegisterTest();
                         break;
 
                     default:

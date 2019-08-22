@@ -12,6 +12,9 @@ repositories {
     maven {
         url = 'http://repo.maven.apache.org/maven2'
     }
+    flatDir {
+        dirs 'lib'
+    }
 }
 
 dependencies {
@@ -23,7 +26,10 @@ dependencies {
     compile 'xpp3:xpp3_min:1.1.4c'
     compile 'com.google.code.gson:gson:2.8.5'
     compile 'org.knowm.xchart:xchart:3.5.4'
-//    compile 'rocks.xmpp:xmpp-core-client:0.8.1'
+    compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.1'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version: '2.3.2'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-core', version: '2.3.0.1'
+    compile fileTree(dir: 'lib', include: '*.jar')
 }
 
 group = 'TestJabber'

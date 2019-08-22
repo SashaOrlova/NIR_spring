@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class Client {
     private static Logger log = Logger.getLogger(Client.class.getName());
     private ClientConfig config = null;
-    private Socket clientSocket = null;
+    private Socket clientSocket;
     private Queue<Integer> answers = new ConcurrentLinkedQueue<>();
 
     public static void main(String[] args) {
@@ -35,10 +35,10 @@ public class Client {
     }
 
     Client(Socket clientSocket) throws IOException, InterruptedException {
+        this.clientSocket = clientSocket;
         InputStream inputStream = clientSocket.getInputStream();
 
         while (!clientSocket.isClosed()) {
-
             int command = inputStream.read();
             if (command == -1) {
                 return;
@@ -60,6 +60,10 @@ public class Client {
 
                 case Commands.START_LOGIN:
                     loginTest();
+                    break;
+
+                case Commands.REGISTER_USER:
+                    registerUsers();
                     break;
 
                 default:
@@ -108,7 +112,7 @@ public class Client {
 
         ClientConfig finalConfig = config;
         Thread uploadThread = new Thread(() -> updateInfo(out, finalConfig, answers));
-        uploadThread.run();
+        uploadThread.start();
         uploadThread.join();
         for (Thread thread: threads) {
             thread.interrupt();
@@ -137,7 +141,36 @@ public class Client {
 
         ClientConfig finalConfig = config;
         Thread uploadThread = new Thread(() -> updateInfo(out, finalConfig, answers));
-        uploadThread.run();
+        uploadThread.start();
+        uploadThread.join();
+        for (Thread thread: threads) {
+            thread.interrupt();
+        }
+        log.info("Finish test");
+        clientSocket.close();
+    }
+
+    private void registerUsers() throws IOException, InterruptedException {
+        log.info("Start tests");
+        if (config == null) {
+            log.severe("No config");
+            clientSocket.close();
+            return;
+        }
+
+        ArrayList<Thread> threads = new ArrayList<>();
+        for (int i = config.getUserStartIndex(); i < config.getUserFinishIndex(); i++) {
+            log.info("start user " + i);
+            Thread sender = new RegisterationChecker(i, answers, config);
+            threads.add(sender);
+            sender.start();
+        }
+
+        DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+
+        ClientConfig finalConfig = config;
+        Thread uploadThread = new Thread(() -> updateInfo(out, finalConfig, answers));
+        uploadThread.start();
         uploadThread.join();
         for (Thread thread: threads) {
             thread.interrupt();
@@ -157,7 +190,7 @@ public class Client {
             Object[] array = answers.toArray();
             if (answers.size() == 0) {
                 zeroSize++;
-                if (zeroSize >= 5) {
+                if (zeroSize >= 1000) {
                     try {
                         out.writeInt(-1);
                         out.close();
@@ -166,6 +199,7 @@ public class Client {
                         e.printStackTrace();
                     }
                 }
+                continue;
             } else {
                 zeroSize = 0;
             }

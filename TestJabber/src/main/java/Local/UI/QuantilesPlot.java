@@ -103,11 +103,11 @@ public class QuantilesPlot extends Thread {
             answerTime90.add(0);
         }
 
-        if (testTime.size() > 60) {
-            testTime = testTime.subList(testTime.size() - 60, testTime.size());
-            answerTime90 = answerTime90.subList(answerTime90.size() - 60, answerTime90.size());
-            answerTime95 = answerTime95.subList(answerTime95.size() - 60, answerTime95.size());
-            answerTime99 = answerTime99.subList(answerTime99.size() - 60, answerTime99.size());
+        if (testTime.size() > 30) {
+            testTime = testTime.subList(testTime.size() - 30, testTime.size());
+            answerTime90 = answerTime90.subList(answerTime90.size() - 30, answerTime90.size());
+            answerTime95 = answerTime95.subList(answerTime95.size() - 30, answerTime95.size());
+            answerTime99 = answerTime99.subList(answerTime99.size() - 30, answerTime99.size());
         }
     }
 

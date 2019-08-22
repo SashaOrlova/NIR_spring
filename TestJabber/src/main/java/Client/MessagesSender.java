@@ -85,9 +85,11 @@ public class MessagesSender extends Thread {
     public void run() {
         XmppClient xmppClient = XmppClient.create(this.config.getServiceName(), getConnection());
         xmppClient.addInboundMessageListener(e -> {
+            System.out.println(e.getMessage().toString());
             Message message = e.getMessage();
             sendToLocal(message);
         });
+
         xmppClient.addOutboundMessageListener((MessageEvent e)->{
             e.getMessage().setBody(Long.toString(System.currentTimeMillis()));
             System.out.println(Long.getLong(e.getMessage().getBody()) - System.currentTimeMillis()); });
