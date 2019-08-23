@@ -1,4 +1,4 @@
-package Local.UI;
+package Local;
 
 public class Mode {
     public static final int ONLINE = 1;
