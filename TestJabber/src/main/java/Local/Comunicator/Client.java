@@ -56,7 +56,7 @@ public class Client {
      * @param successAnswers
      * @throws IOException
      */
-    public void startTest(Queue<Long> successAnswers) throws IOException {
+    public void startTest(Queue<Long> successAnswers, AtomicInteger counter) throws IOException {
         log.info("Start test");
         InputStream stream = socket.getInputStream();
         DataInputStream dataInputStream = new DataInputStream(stream);
@@ -69,6 +69,8 @@ public class Client {
                 socket.close();
                 return;
             }
+
+            counter.incrementAndGet();
             successAnswers.add(result);
         }
     }
@@ -79,7 +81,7 @@ public class Client {
      * @param successAnswers
      * @throws IOException
      */
-    public void startLoginTest(Queue<Long> successAnswers) throws IOException {
+    public void startLoginTest(Queue<Long> successAnswers, AtomicInteger counter) throws IOException {
         log.info("Start login test");
         InputStream stream = socket.getInputStream();
         DataInputStream dataInputStream = new DataInputStream(stream);
@@ -93,6 +95,7 @@ public class Client {
                 return;
             }
 
+            counter.incrementAndGet();
             successAnswers.add(result);
         }
     }
@@ -103,7 +106,7 @@ public class Client {
      * @param successAnswers
      * @throws IOException
      */
-    public void startRegisterTest(Queue<Long> successAnswers) throws IOException {
+    public void startRegisterTest(Queue<Long> successAnswers, AtomicInteger counter) throws IOException {
         log.info("Start register test");
         InputStream stream = socket.getInputStream();
         DataInputStream dataInputStream = new DataInputStream(stream);
@@ -117,6 +120,7 @@ public class Client {
                 return;
             }
 
+            counter.incrementAndGet();
             successAnswers.add(result);
         }
     }
