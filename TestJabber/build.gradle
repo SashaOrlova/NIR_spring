@@ -5,6 +5,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'org.openjfx.javafxplugin' version '0.0.6'
 }
 
 repositories {
@@ -44,9 +45,14 @@ publishing {
     }
 }
 
+javafx {
+    version = "11"
+    modules = [ 'javafx.controls', 'javafx.fxml']
+}
+
 jar {
     manifest {
-        attributes "Main-Class": "Client.Client"
+        attributes "Main-Class": "Server.Monitoring"
     }
 
     from {
