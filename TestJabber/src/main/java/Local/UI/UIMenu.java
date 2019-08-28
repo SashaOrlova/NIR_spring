@@ -12,6 +12,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -29,6 +30,7 @@ public class UIMenu extends Application {
         Button messageBtn = new Button("Start Messages Test");
         Button loginBtn = new Button("Start Login Test");
         Button registerBtn = new Button("Start Register Test");
+        Button monitorBtn = new Button("Monitoring");
         CheckBox mode = new CheckBox("Online mode");
 
         messageBtn.setOnAction((event) -> safeTestStart(() -> controller.startTest(),
@@ -40,13 +42,14 @@ public class UIMenu extends Application {
         registerBtn.setOnAction((event) -> safeTestStart(() -> controller.startTest(),
                 Arrays.asList(messageBtn, loginBtn, registerBtn)));
 
+        monitorBtn.setOnAction((event) -> showMonitortBox());
         mode.setOnAction((event -> controller.switchMode(mode.isSelected() ? Mode.ONLINE : Mode.OFFLINE)));
 
-        VBox vbox = new VBox(messageBtn, loginBtn, registerBtn, mode);
+        VBox vbox = new VBox(messageBtn, loginBtn, registerBtn, monitorBtn, mode);
         vbox.setSpacing(20);
         vbox.setAlignment(Pos.BASELINE_CENTER);
 
-        primaryStage.setScene(new Scene(vbox, 300, 200));
+        primaryStage.setScene(new Scene(vbox, 300, 230));
         primaryStage.show();
     }
 
@@ -58,13 +61,26 @@ public class UIMenu extends Application {
         try {
             controller.start();
             controller.loadConfig();
+            controller.monitoring();
             test.call();
         } catch (Exception e) {
             showAlertBox(e);
         }
-        for (Button btn: buttons) {
-            btn.setDisable(false);
+    }
+
+    private void showMonitortBox() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Monitor info");
+
+        try {
+            Monitoring.Info info = controller.getMonitiring().monitor();
+            alert.setHeaderText(null);
+            alert.setContentText("CPU: " + info.cpuUsage * 100 + "% Free memory: " + info.freeMemory + " bytes");
+        } catch (IOException e) {
+            showAlertBox(e);
         }
+
+        alert.showAndWait();
     }
 
     private void showAlertBox(Exception e) {

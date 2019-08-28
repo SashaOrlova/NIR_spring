@@ -2,7 +2,6 @@ package Local.Comunicator;
 
 import Client.Configuration.ClientConfig;
 import Common.Commands;
-import Common.Results;
 
 import java.io.DataInputStream;
 import java.io.IOException;

@@ -5,7 +5,6 @@ import Local.Comunicator.Monitoring;
 import Local.Configuration.ConfigParser;
 import Local.Configuration.MainConfig;
 import Local.UI.QuantilesPlot;
-import Local.UI.UIMonitor;
 
 import java.io.*;
 import java.util.ArrayDeque;
@@ -23,6 +22,10 @@ public class Controller {
 
     public void monitoring() throws Exception {
         monitoring = new Monitoring(config);
+    }
+
+    public Monitoring getMonitiring() {
+        return monitoring;
     }
 
     /**
@@ -71,11 +74,6 @@ public class Controller {
         if (!checkConfig(config)) {
             Interpreter.reportAboutError("wrong config");
         }
-        if (monitoring != null) {
-            monitoring.start();
-            Thread t = new Thread(new UIMonitor(monitoring, counter, config.getUpdateTime()));
-            t.start();
-        }
         if (mode == Mode.ONLINE) {
             Thread ui = new QuantilesPlot(config, globalQueue);
             ui.start();
@@ -91,11 +89,6 @@ public class Controller {
         communicator.startLoginTesting(globalQueue, counter);
         if (!checkConfig(config)) {
             Interpreter.reportAboutError("wrong config");
-        }
-        if (monitoring != null) {
-            monitoring.start();
-            Thread t = new Thread(new UIMonitor(monitoring, counter, config.getUpdateTime()));
-            t.start();
         }
         if (mode == Mode.ONLINE) {
             Thread ui = new QuantilesPlot(config, globalQueue);
@@ -113,11 +106,7 @@ public class Controller {
             Interpreter.reportAboutError("wrong config");
         }
         communicator.startRegisterTesting(globalQueue, counter);
-        if (monitoring != null) {
-            monitoring.start();
-            Thread t = new Thread(new UIMonitor(monitoring, counter, config.getUpdateTime()));
-            t.start();
-        }
+
         if (mode == Mode.ONLINE) {
             Thread ui = new QuantilesPlot(config, globalQueue);
             ui.start();

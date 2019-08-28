@@ -40,40 +40,17 @@ public class Monitoring {
             return;
         }
 
-        int updateTime = in.read();
-        if (updateTime <= 0) {
-            in.close();
-            out.close();
-            socket.close();
-            log.severe("wrong update time");
-            return;
-        }
-
         while (true) {
             if (in.available() > 0) {
-                int command = in.read();
-                if (command == Commands.FINISH) {
-                    in.close();
-                    out.close();
-                    socket.close();
-                    log.info("Stop monitoring");
-                    return;
-                }
-            }
+                in.read();
+                OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(
+                        OperatingSystemMXBean.class);
 
-            OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(
-                    OperatingSystemMXBean.class);
+                double cpuUsage = osBean.getSystemCpuLoad();
+                long freeMemory = osBean.getFreePhysicalMemorySize();
 
-            double cpuUsage = osBean.getSystemCpuLoad();
-            long freeMemory = osBean.getFreePhysicalMemorySize();
-
-            out.writeDouble(cpuUsage);
-            out.writeLong(freeMemory);
-
-            try {
-                Thread.sleep(updateTime);
-            } catch (InterruptedException e) {
-                log.severe("Interrupted exception");
+                out.writeDouble(cpuUsage);
+                out.writeLong(freeMemory);
             }
         }
     }

@@ -15,11 +15,8 @@ public class Monitoring {
         socket = new Socket(config.getServiceIP(), 3030);
     }
 
-    public void start() throws IOException {
-        socket.getOutputStream().write(config.getUpdateTime());
-    }
-
     public Info monitor() throws IOException {
+        socket.getOutputStream().write(1);
         DataInputStream in = new DataInputStream(socket.getInputStream());
         double cpuUsage = in.readDouble();
         long freeMemory = in.readLong();
