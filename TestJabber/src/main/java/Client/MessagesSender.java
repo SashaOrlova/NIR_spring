@@ -67,7 +67,6 @@ public class MessagesSender extends Thread {
         long timestamp = System.currentTimeMillis();
         int duration = (int) (timestamp - Long.parseLong(message.getBody(), 10));
         answers.add(duration);
-        System.out.println(duration);
         log.info("Send timestamp from user" + id + ' ' + timestamp);
     }
 
@@ -85,14 +84,13 @@ public class MessagesSender extends Thread {
     public void run() {
         XmppClient xmppClient = XmppClient.create(this.config.getServiceName(), getConnection());
         xmppClient.addInboundMessageListener(e -> {
-            System.out.println(e.getMessage().toString());
             Message message = e.getMessage();
             sendToLocal(message);
         });
 
         xmppClient.addOutboundMessageListener((MessageEvent e)->{
             e.getMessage().setBody(Long.toString(System.currentTimeMillis()));
-            System.out.println(Long.getLong(e.getMessage().getBody()) - System.currentTimeMillis()); });
+        });
         try {
             xmppClient.connect();
             login(xmppClient);
